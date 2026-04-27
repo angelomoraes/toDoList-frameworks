@@ -16,7 +16,7 @@ export class App {
   apiURL: string;
 
   constructor(private http: HttpClient, @Inject(PLATFORM_ID) private platformId: Object) {
-    this.apiURL = 'https://todolist-frameworks-production.up.railway.app/';
+    this.apiURL = 'https://todolist-frameworks-production.up.railway.app';
     if (isPlatformBrowser(this.platformId)) {
       this.READ_tarefas();
     }
