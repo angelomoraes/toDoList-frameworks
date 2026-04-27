@@ -1,18 +1,12 @@
 const express = require('express');
+const cors = require('cors');
 const app = express();
 
-app.use((req, res, next) => {
- res.setHeader("Access-Control-Allow-Origin", "*");
- res.setHeader('Access-Control-Allow-Methods', 'HEAD, GET, POST, PATCH, DELETE, OPTIONS');
- res.header(
- "Access-Control-Allow-Headers",
- "Origin, X-Requested-With, Content-Type, Accept"
- );
- if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
- next();
-});
+app.use(cors({
+  origin: '*', // Permite qualquer site (Vercel, localhost, etc.)
+  methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Origin', 'Accept']
+}));
 
 app.use(express.json());
 

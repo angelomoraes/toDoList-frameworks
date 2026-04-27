@@ -16,7 +16,7 @@ export class App {
   apiURL: string;
 
   constructor(private http: HttpClient, @Inject(PLATFORM_ID) private platformId: Object) {
-    this.apiURL = 'https://todolist-frameworks-production.up.railway.app';
+    this.apiURL = 'https://todolist-frameworks-production.up.railway.app/';
     if (isPlatformBrowser(this.platformId)) {
       this.READ_tarefas();
     }
@@ -33,8 +33,10 @@ export class App {
 
 
   READ_tarefas() {
-    this.http.get<Tarefa[]>(`${this.apiURL}/api/getAll`).subscribe(
-      resultado => this.arrayDeTarefas = resultado);
+    this.http.get<Tarefa[]>(`${this.apiURL}/api/getAll?t=${new Date().getTime()}`).subscribe({
+      next: resultado => this.arrayDeTarefas = resultado,
+      error: erro => console.error('Erro ao ler tarefas:', erro)
+    });
   }
 
   UPDATE_tarefa(tarefaAserModificada: Tarefa){
