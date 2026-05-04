@@ -12,7 +12,7 @@ import { isPlatformBrowser } from '@angular/common';
 export class App {
   protected readonly title = signal('TODOapp');
 
-  arrayDeTarefas: Tarefa[] = [];
+  arrayDeTarefas = signal<Tarefa[]>([]);
   apiURL: string;
 
   constructor(private http: HttpClient, @Inject(PLATFORM_ID) private platformId: Object) {
@@ -26,7 +26,7 @@ export class App {
     const novaTarefa = new Tarefa(descricaoNovaTarefa, false);
     this.http.post<Tarefa>(`${this.apiURL}/api/post`, novaTarefa).subscribe({
       next: (tarefaSalva) => {
-        this.arrayDeTarefas = [...this.arrayDeTarefas, tarefaSalva];
+        this.arrayDeTarefas.update(tarefas => [...tarefas, tarefaSalva]);
       },
       error: erro => console.error('Erro ao criar:', erro)});
   }
@@ -34,7 +34,9 @@ export class App {
 
   READ_tarefas() {
     this.http.get<Tarefa[]>(`${this.apiURL}/api/getAll?t=${new Date().getTime()}`).subscribe({
-      next: resultado => this.arrayDeTarefas = resultado,
+      next: resultado => {
+        this.arrayDeTarefas.set(resultado);
+      },
       error: erro => console.error('Erro ao ler tarefas:', erro)
     });
   }
@@ -46,7 +48,9 @@ export class App {
     this.http.patch<Tarefa>(`${this.apiURL}/api/update/${id}`,
       tarefaAserModificada).subscribe({
         next: (resultado) => {
-        this.arrayDeTarefas = this.arrayDeTarefas.map(t => t._id === id ? resultado : t);
+        this.arrayDeTarefas.update(tarefas => 
+          tarefas.map(t => t._id === id ? resultado : t)
+        );
       },
       error: erro => console.error('Erro ao atualizar:', erro)
     });
@@ -58,8 +62,7 @@ export class App {
 
     this.http.delete(`${this.apiURL}/api/delete/${id}`).subscribe({
       next: () => {
-        // Filtra a lista removendo apenas a tarefa com o ID deletado
-        this.arrayDeTarefas = this.arrayDeTarefas.filter(t => t._id !== id);
+        this.arrayDeTarefas.update(tarefas => tarefas.filter(t => t._id !== id));
       },
       error: erro => console.error('Erro ao remover:', erro)
     });
